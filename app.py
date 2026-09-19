@@ -13,21 +13,52 @@ st.set_page_config(
     layout="wide",
 )
 
-# Apply Dark Slate Custom Styling
+# Apply Dark Slate Custom Styling with High-Contrast Text
 st.markdown(
     """
     <style>
-    .main { background-color: #0F172A; }
-    .stMetric { background-color: #1E293B; padding: 12px; border-radius: 8px; }
-    div[data-testid="stMetricValue"] { font-size: 1.6rem !important; }
+    /* Main Background */
+    .stApp {
+        background-color: #0F172A !important;
+    }
+    
+    /* Metric Card Containers */
+    div[data-testid="stMetric"] {
+        background-color: #1E293B !important;
+        padding: 14px !important;
+        border-radius: 10px !important;
+        border: 1px solid #334155 !important;
+    }
+    
+    /* Metric Titles / Labels */
+    div[data-testid="stMetricLabel"] p {
+        color: #94A3B8 !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+    }
+    
+    /* Metric Values (Numbers) */
+    div[data-testid="stMetricValue"] div {
+        color: #F8FAFC !important;
+        font-weight: 700 !important;
+        font-size: 1.6rem !important;
+    }
+
+    /* Primary Text Headers */
+    h1, h2, h3, h4, p, span {
+        color: #F8FAFC !important;
+    }
+
+    /* Buttons Styling */
+    .stButton > button {
+        color: #FFFFFF !important;
+        font-weight: bold !important;
+        border-radius: 8px !important;
+    }
     </style>
     """,
-    unsafe_allow_html=True,  # ✅ Corrected parameter name
+    unsafe_allow_html=True,
 )
-
-# ========================================================
-# Core Signal Processing & ML Pipeline
-# ========================================================
 class SmartChassisAnalyzer:
 
     def __init__(self, fs=1000, duration=5):
