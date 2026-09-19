@@ -7,7 +7,7 @@ from sklearn.ensemble import IsolationForest
 import matplotlib.pyplot as plt
 
 # -----------------------------------------------------------------------------
-# 1. PAGE CONFIGURATION & THEME
+# 1. PAGE CONFIGURATION & RESPONSIVE CUSTOM CSS
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="Smart Chassis Vibration Analysis System",
@@ -16,7 +16,6 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom Styling to Match Slate Dark Theme (#0F172A / #1E293B)
 st.markdown(
     """
     <style>
@@ -24,20 +23,27 @@ st.markdown(
             background-color: #0F172A;
             color: #F8FAFC;
         }
+        /* Metric cards custom container styling */
         div[data-testid="stMetric"] {
             background-color: #1E293B;
-            padding: 12px 16px;
+            padding: 10px 12px !important;
             border-radius: 8px;
             border: 1px solid #334155;
+            min-height: 80px;
         }
+        /* Metric Labels: smaller size and wrapping for tight viewports */
         div[data-testid="stMetricLabel"] > label {
             color: #94A3B8 !important;
-            font-size: 12px !important;
-            font-weight: bold !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            white-space: normal !important;
+            word-wrap: break-word !important;
         }
+        /* Metric Values: adjusted size to prevent truncation */
         div[data-testid="stMetricValue"] > div {
             color: #F8FAFC !important;
-            font-weight: bold !important;
+            font-size: 16px !important;
+            font-weight: 700 !important;
         }
     </style>
 """,
@@ -101,6 +107,7 @@ def train_isolation_forest():
 
 
 model = train_isolation_forest()
+
 
 # -----------------------------------------------------------------------------
 # 3. SIGNAL GENERATION LOGIC
@@ -178,12 +185,22 @@ else:
     color = "#EF4444"  # Red
 
 # -----------------------------------------------------------------------------
-# 6. STATUS HEADER & METRIC KPI CARDS
+# 6. STATUS HEADER & COMPACT METRIC KPI CARDS
 # -----------------------------------------------------------------------------
 st.sidebar.markdown("---")
-st.sidebar.markdown(f"### Diagnostic Status")
+st.sidebar.markdown("### Diagnostic Status")
 st.sidebar.markdown(
-    f"<h3 style='color:{color}; margin:0;'>{status_text}</h3>",
+    f"""
+    <div style="
+        color: {color}; 
+        font-size: 15px; 
+        font-weight: bold; 
+        line-height: 1.2;
+        padding: 4px 0px;
+    ">
+        {status_text}
+    </div>
+    """,
     unsafe_allow_html=True,
 )
 
