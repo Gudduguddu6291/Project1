@@ -1,0 +1,82 @@
+================================================================================
+SMART CHASSIS VIBRATION ANALYSIS & ANOMALY DETECTION SYSTEM
+Python Code Architecture & Summary Explanation
+================================================================================
+
+1. CORE OVERVIEW
+--------------------------------------------------------------------------------
+This project is an end-to-end Python application designed to detect structural 
+defects (like loose joints or micro-cracks) in a vehicle chassis using vibration 
+signals. 
+
+The code executes five main tasks:
+  1. Generates/simulates raw chassis vibration wave data.
+  2. Extracts statistical time-domain and frequency-domain features.
+  3. Computes time-frequency spectrograms (STFT).
+  4. Runs an Machine Learning model (Isolation Forest) to detect anomalies.
+  5. Displays live metrics and 4 real-time graphs inside a Tkinter desktop GUI.
+
+
+2. MAIN CODE MODULES EXPLAINED
+--------------------------------------------------------------------------------
+
+[MODULE 1: Signal Generation]
+-----------------------------
+Function: Creates realistic acceleration time-series signals g(t).
+How it works:
+  - Generates baseline sine waves representing normal engine/road dynamics 
+    (20 Hz and 45 Hz).
+  - Adds Gaussian white noise to mimic real-world sensor environmental noise.
+  - Injects specific fault dynamics:
+      * Warning Mode: Adds mid-frequency harmonic chatter (85 Hz) for loose joints.
+      * Critical Mode: Injects high-frequency chatter (130 Hz) and sudden, extreme 
+        impulse spikes to simulate frame micro-cracks.
+
+[MODULE 2: Feature Extraction Engine]
+------------------------------------
+Function: Converts 1,000 raw vibration data points into a compact 6D feature vector.
+Calculates:
+  1. RMS Acceleration   -> Overall vibration energy.
+  2. Peak Acceleration  -> Maximum instantaneous impact force.
+  3. Kurtosis           -> Detects sharpness of spikes (spikes in Kurtosis indicate micro-cracks).
+  4. Crest Factor       -> Ratio of peak impact relative to average energy.
+  5. Dominant Frequency -> Uses Fast Fourier Transform (FFT) to find the primary excitation frequency.
+  6. Spectral Energy    -> Summed power across positive frequency bands (0–200 Hz).
+
+[MODULE 3: STFT Spectrogram Computation]
+----------------------------------------
+Function: Performs Short-Time Fourier Transform (STFT).
+How it works:
+  - Slides a small window across the signal over time.
+  - Computes an FFT inside each window to map frequency evolution across time.
+  - Allows the system to distinguish between a temporary bump (pothole) and 
+    continuous structural chatter.
+
+[MODULE 4: Unsupervised Machine Learning (Isolation Forest)]
+------------------------------------------------------------
+Function: Detects anomalies without needing pre-labeled failure datasets.
+How it works:
+  - Model Setup: Trained on 120 baseline normal operational runs.
+  - Decision Logic: Randomly isolates feature points. Anomalous runs require 
+    fewer splits to isolate, resulting in negative ML Anomaly Scores.
+  - Hybrid Severity Classifier:
+      * Level 0 (Green)   : ML Score > -0.02 AND Kurtosis < 3.5  (Nominal)
+      * Level 1 (Yellow)  : Score drops OR Kurtosis 3.5–6.0     (Warning / Loose Joints)
+      * Level 2 (Red)     : Score < -0.08 OR Kurtosis >= 6.0    (Critical / Crack Hazard)
+
+[MODULE 5: Tkinter & Matplotlib Dashboard UI]
+---------------------------------------------
+Function: Renders real-time telemetry and a 2x2 graphical grid.
+Components:
+  - Top Metric Cards: Shows live numbers for Peak, RMS, Kurtosis, Dominant Freq, 
+    ML Score, and active Status (Normal/Warning/Critical).
+  - Top-Left Plot    : Raw time-series acceleration trace (color changes Green -> Red).
+  - Top-Right Plot   : STFT spectrogram heatmap using the 'magma' color palette.
+  - Bottom-Left Plot : FFT spectrum curve across 0–200 Hz.
+  - Bottom-Right Plot: Horizontal bar chart showing live ML score vs. threshold bounds.
+
+
+3. SUMMARY OF EXECUTION FLOW
+--------------------------------------------------------------------------------
+Raw Data -> Statistical & FFT Extraction -> Isolation Forest Scoring -> Rule-Based Alert -> Tkinter Dashboard Update
+================================================================================
