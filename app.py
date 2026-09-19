@@ -22,9 +22,8 @@ st.markdown(
     div[data-testid="stMetricValue"] { font-size: 1.6rem !important; }
     </style>
     """,
-    unsafe_allow_scope=True,
+    unsafe_allow_html=True,  # ✅ Corrected parameter name
 )
-
 
 # ========================================================
 # Core Signal Processing & ML Pipeline
